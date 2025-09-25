@@ -1,46 +1,47 @@
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, removeTodo, toggleTodo } from "./store/actions";
+import { removeTodo } from "./store/actions";
 
 function App() {
   const todos = useSelector((state) => state.todos);
+  const counter = useSelector((state) => state.counter);
+
   const dispatch = useDispatch();
 
   function handleAdd(e) {
     e.preventDefault();
     const text = e.target.elements.todo.value.trim();
     if (!text) return;
-    dispatch(addTodo(text));
+    dispatch({
+      type: "ADD_TODO",
+      payload: text,
+    });
     e.target.reset();
   }
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Redux Todo List</h1>
+    <div style={{ padding: "2rem" }}>
+      <h1>Redux Intro – Todo List</h1>
       <form onSubmit={handleAdd}>
         <input name="todo" placeholder="Lägg till todo" />
         <button type="submit">Add</button>
       </form>
 
-      <p>Total todos: {todos.length}</p>
-
       <ul>
         {todos.map((t) => (
-          <li key={t.id} style={{ marginBottom: ".5rem" }}>
-            <span
-              style={{
-                textDecoration: t.completed ? "line-through" : "none",
-                marginRight: "1rem",
-              }}
-            >
-              {t.text}
-            </span>
-            <button onClick={() => dispatch(toggleTodo(t.id))}>
-              {t.completed ? "Undo" : "Complete"}
-            </button>{" "}
+          <li key={t.id}>
+            {t.done ? (
+              <span style={{ color: "green" }}>{t.text}</span>
+            ) : (
+              <span>{t.text}</span>
+            )}
             <button onClick={() => dispatch(removeTodo(t.id))}>Remove</button>
+            <button onClick={() => dispatch({ type: "DONE", payload: t.id })}>
+              Done
+            </button>
           </li>
         ))}
       </ul>
+      <h2>Antal todos: {counter}</h2>
     </div>
   );
 }
